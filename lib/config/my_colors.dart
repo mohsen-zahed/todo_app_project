@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 class MyColors {
   Color blackColor = Colors.black;
   Color whiteColor = Colors.white;
+  Color transparentColor = Colors.transparent;
   Color lightScaffoldBackgroundColor = Colors.white.withOpacity(0.97);
   Color darkScaffoldBackgroundColor = const Color.fromARGB(255, 27, 27, 27);
+  Color orangeColor = Colors.orange;
+  Color blueAccentColor = Colors.lightBlueAccent;
   Color greyColor = Colors.grey;
   Color greyColorShade100 = Colors.grey.shade100;
   Color greyColorShade200 = Colors.grey.shade200;

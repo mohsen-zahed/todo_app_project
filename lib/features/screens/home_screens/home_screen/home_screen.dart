@@ -1,15 +1,24 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:to_do_list_project/config/images_paths.dart';
 import 'package:to_do_list_project/config/my_colors.dart';
 import 'package:to_do_list_project/features/data/models/task_model.dart';
 import 'package:to_do_list_project/features/screens/home_screens/create_task_screen/create_task_screen.dart';
 import 'package:to_do_list_project/functions/media_queries.dart';
 import 'package:to_do_list_project/main.dart';
+import 'package:to_do_list_project/utils/helper_functions.dart';
+import 'package:to_do_list_project/utils/theme_checker.dart';
+import 'package:lottie/lottie.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final hive = Hive.box<TaskModel>(hiveBoxName);
@@ -20,11 +29,22 @@ class HomeScreen extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: ((context) => const CreateTaskScreen()),
+              builder: ((context) => CreateTaskScreen(
+                    taskModel: TaskModel(),
+                  )),
             ),
           );
         },
-        label: const Text('Add new task'),
+        label: Row(
+          children: [
+            const Text('Add new task'),
+            const SizedBox(width: 5),
+            Icon(
+              Icons.add,
+              size: mediaQueries.getHeightMediaQuery(context, 0.02),
+            ),
+          ],
+        ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -41,18 +61,41 @@ class HomeScreen extends StatelessWidget {
                 Expanded(
                   child: ValueListenableBuilder(
                     valueListenable: hive.listenable(),
-                    builder: (context, value, child) => ListView.builder(
-                      itemCount: hive.values.length,
-                      itemBuilder: (context, index) {
-                        return TaskTileWidget(
-                          task: hive.values.toList()[index].taskName,
-                          isSelected: hive.values.toList()[index].isCompleted,
-                          onTileTap: () {},
-                          priorityColor: checkPriority(
-                              hive.values.toList()[index].priority),
-                        );
-                      },
-                    ),
+                    builder: (context, value, child) => hive.isEmpty
+                        ? LottieBuilder.asset(
+                            imagesPaths.emptyList,
+                            animate: true,
+                            reverse: true,
+                            options: LottieOptions(
+                              enableMergePaths: true,
+                            ),
+                            fit: BoxFit.contain,
+                            height:
+                                mediaQueries.getHeightMediaQuery(context, 0.6),
+                            width:
+                                mediaQueries.getWidthMediaQuery(context, 0.6),
+                          )
+                        : ListView.builder(
+                            itemCount: hive.values.length,
+                            itemBuilder: (context, index) {
+                              return TaskTileWidget(
+                                task: hive.values.toList()[index].taskName,
+                                isCompleted:
+                                    hive.values.toList()[index].isCompleted,
+                                priorityColor: checkPriority(
+                                    hive.values.toList()[index].priority),
+                                onTileIconTap: () {
+                                  setState(() {
+                                    hive.values.toList()[index].isCompleted =
+                                        !hive.values
+                                            .toList()[index]
+                                            .isCompleted;
+                                  });
+                                },
+                                taskModel: hive.values.toList()[index],
+                              );
+                            },
+                          ),
                   ),
                 ),
               ],
@@ -62,29 +105,31 @@ class HomeScreen extends StatelessWidget {
       ),
     );
   }
-}
 
-Color checkPriority(Priority priority) {
-  if (priority == Priority.low) {
-    return colors.lightPrimaryColor;
-  } else if (priority == Priority.normal) {
-    return colors.redColor;
-  } else {
-    return colors.greenColor;
+  Color checkPriority(Priority priority) {
+    if (priority == Priority.high) {
+      return colors.lightPrimaryColor;
+    } else if (priority == Priority.normal) {
+      return colors.orangeColor;
+    } else {
+      return colors.blueAccentColor;
+    }
   }
 }
 
 class TaskTileWidget extends StatelessWidget {
-  final GestureTapCallback onTileTap;
+  final GestureTapCallback onTileIconTap;
+  final TaskModel taskModel;
   final String task;
   final Color priorityColor;
-  final bool isSelected;
+  final bool isCompleted;
   const TaskTileWidget({
     super.key,
-    required this.onTileTap,
     required this.task,
     required this.priorityColor,
-    required this.isSelected,
+    required this.isCompleted,
+    required this.onTileIconTap,
+    required this.taskModel,
   });
 
   @override
@@ -95,8 +140,18 @@ class TaskTileWidget extends StatelessWidget {
         vertical: mediaQueries.getWidthMediaQuery(context, 0.01),
       ),
       child: ListTile(
-        leading: Icon(
-          isSelected ? CupertinoIcons.circle_fill : CupertinoIcons.circle,
+        leading: GestureDetector(
+          onTap: onTileIconTap,
+          child: Icon(
+            isCompleted
+                ? CupertinoIcons.check_mark_circled
+                : CupertinoIcons.circle,
+            color: isCompleted
+                ? priorityColor
+                : themeChecker.isThemeLight(context)
+                    ? colors.blackColor
+                    : colors.whiteColor,
+          ),
         ),
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
@@ -107,13 +162,33 @@ class TaskTileWidget extends StatelessWidget {
           ),
         ),
         tileColor: colors.whiteColor,
-        onTap: onTileTap,
+        onTap: () {
+          isCompleted
+              ? helperFuncions.showSnackBar(
+                  context, 'Completed tasks can not be modified!')
+              : Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CreateTaskScreen(
+                      taskModel: taskModel,
+                    ),
+                  ),
+                );
+        },
         contentPadding: EdgeInsets.only(
           left: mediaQueries.getWidthMediaQuery(context, 0.03),
         ),
-        title: Text(task),
+        title: Text(
+          task,
+          style: TextStyle(
+            decoration:
+                isCompleted ? TextDecoration.lineThrough : TextDecoration.none,
+          ),
+          overflow: TextOverflow.ellipsis,
+        ),
         trailing: Container(
           width: 5,
+          height: mediaQueries.getHeightMediaQuery(context),
           decoration: BoxDecoration(
             color: priorityColor,
             borderRadius: const BorderRadius.only(
