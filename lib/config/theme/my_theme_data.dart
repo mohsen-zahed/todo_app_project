@@ -3,6 +3,13 @@ import 'package:to_do_list_project/config/my_colors.dart';
 import 'package:to_do_list_project/config/theme/custom_theme_data_props.dart';
 
 class MyThemeData {
+  static MyThemeData? _myThemeData;
+  MyThemeData._();
+  static MyThemeData get instance {
+    _myThemeData ??= MyThemeData._();
+    return _myThemeData!;
+  }
+
   ThemeData lightTheme(BuildContext context) {
     return ThemeData(
       brightness: Brightness.light,
@@ -28,4 +35,4 @@ class MyThemeData {
   }
 }
 
-final MyThemeData myThemeData = MyThemeData();
+final MyThemeData myThemeData = MyThemeData.instance;

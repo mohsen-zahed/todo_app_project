@@ -5,6 +5,7 @@ import 'package:to_do_list_project/config/my_colors.dart';
 import 'package:to_do_list_project/features/data/models/task_model.dart';
 import 'package:to_do_list_project/features/screens/home_screens/home_screen/home_screen.dart';
 import 'package:to_do_list_project/config/theme/my_theme_data.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 const hiveBoxName = 'tasks';
 
@@ -40,3 +41,5 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+final instance = FirebaseAuth.instance.signInAnonymously();
