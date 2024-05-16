@@ -7,11 +7,15 @@ class TopTextWithSearchBarWidget extends StatelessWidget {
   final String title;
   final IconData icon;
   final TextEditingController searchBarController;
+  final Function(String string) onChanged;
+  final FocusNode focusNode;
   const TopTextWithSearchBarWidget({
     super.key,
     required this.icon,
     required this.searchBarController,
     required this.title,
+    required this.onChanged,
+    required this.focusNode,
   });
 
   @override
@@ -47,7 +51,9 @@ class TopTextWithSearchBarWidget extends StatelessWidget {
               borderRadius: BorderRadius.circular(50),
             ),
             child: TextField(
+              focusNode: focusNode,
               controller: searchBarController,
+              onChanged: onChanged,
               decoration: InputDecoration(
                 hintText: 'Search tasks...',
                 hintStyle: Theme.of(context).textTheme.bodyLarge!.copyWith(color: colors.greyColorShade400),

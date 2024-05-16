@@ -19,6 +19,17 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController searchBarController = TextEditingController();
+  final ValueNotifier<String> searchTermChangeNotifier = ValueNotifier('');
+  final FocusNode searchBarFocusNode = FocusNode();
+
+  @override
+  void dispose() {
+    super.dispose();
+    searchBarController.dispose();
+    searchTermChangeNotifier.dispose();
+    searchBarFocusNode.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final hive = Hive.box<TaskModel>(hiveBoxName);
@@ -26,6 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
       //* Button to createTaskScreen...
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
+          searchBarFocusNode.unfocus();
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -54,6 +66,10 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 //* Title with search bar...
                 TopTextWithSearchBarWidget(
+                  focusNode: searchBarFocusNode,
+                  onChanged: (string) {
+                    searchTermChangeNotifier.value = searchBarController.text;
+                  },
                   title: 'Todo List',
                   searchBarController: searchBarController,
                   icon: Icons.search,
@@ -68,33 +84,50 @@ class _HomeScreenState extends State<HomeScreen> {
                 //* List of tasks or Lottie animation if there are no tasks...
                 Expanded(
                   child: ValueListenableBuilder(
-                    valueListenable: hive.listenable(),
-                    builder: (context, value, child) => hive.values.isEmpty
-                        ? Image.asset(
+                    valueListenable: searchTermChangeNotifier,
+                    builder: (context, value, child) => ValueListenableBuilder(
+                      valueListenable: hive.listenable(),
+                      builder: (context, value, child) {
+                        final List<TaskModel> items;
+                        if (searchBarController.text.isEmpty) {
+                          items = hive.values.toList().reversed.toList();
+                        } else {
+                          items = hive.values
+                              .where((task) => (task.taskName == searchBarController.text || task.taskName.contains(searchBarController.text)))
+                              .toList()
+                              .reversed
+                              .toList();
+                        }
+                        if (hive.values.isEmpty) {
+                          return Image.asset(
                             imagesPaths.emptyListPng,
                             fit: BoxFit.contain,
-                          )
-                        : ListView.builder(
-                            itemCount: hive.values.length,
+                          );
+                        } else {
+                          return ListView.builder(
+                            itemCount: items.length,
                             itemBuilder: (context, index) {
-                              final List<TaskModel> tasksList = hive.values.toList().reversed.toList();
                               return TaskTileWidget(
-                                task: tasksList[index].taskName,
-                                isCompleted: tasksList[index].isCompleted,
-                                priorityColor: checkPriority(tasksList[index].priority),
+                                index: index,
+                                task: items[index].taskName,
+                                isCompleted: items[index].isCompleted,
+                                priorityColor: checkPriority(items[index].priority),
                                 onDissmisbleDrag: (direction) {
                                   DismissDirection.startToEnd;
-                                  tasksList[index].delete();
+                                  items[index].delete();
                                 },
                                 onTileIconTap: () {
                                   setState(() {
-                                    tasksList[index].isCompleted = !tasksList[index].isCompleted;
+                                    items[index].isCompleted = !items[index].isCompleted;
                                   });
                                 },
-                                taskModel: tasksList[index],
+                                taskModel: items[index],
                               );
                             },
-                          ),
+                          );
+                        }
+                      },
+                    ),
                   ),
                 ),
               ],

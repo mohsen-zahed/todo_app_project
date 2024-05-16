@@ -10,6 +10,7 @@ import 'package:to_do_list_project/utils/theme_checker.dart';
 class TaskTileWidget extends StatelessWidget {
   final GestureTapCallback onTileIconTap;
   final Function(DismissDirection) onDissmisbleDrag;
+  final int index;
   final TaskModel taskModel;
   final String task;
   final Color priorityColor;
@@ -22,14 +23,17 @@ class TaskTileWidget extends StatelessWidget {
     required this.onTileIconTap,
     required this.taskModel,
     required this.onDissmisbleDrag,
+    required this.index,
   });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(
-        horizontal: mediaQueries.getWidthMediaQuery(context, 0.05),
-        vertical: mediaQueries.getWidthMediaQuery(context, 0.01),
+      padding: EdgeInsets.fromLTRB(
+        mediaQueries.getWidthMediaQuery(context, 0.04),
+        index == 0 ? mediaQueries.getHeightMediaQuery(context, 0.025) : 0,
+        mediaQueries.getWidthMediaQuery(context, 0.04),
+        mediaQueries.getHeightMediaQuery(context, 0.01),
       ),
       child: Dismissible(
         background: Container(
@@ -54,9 +58,7 @@ class TaskTileWidget extends StatelessWidget {
           leading: GestureDetector(
             onTap: onTileIconTap,
             child: Icon(
-              isCompleted
-                  ? CupertinoIcons.check_mark_circled
-                  : CupertinoIcons.circle,
+              isCompleted ? CupertinoIcons.check_mark_circled : CupertinoIcons.circle,
               color: isCompleted
                   ? priorityColor
                   : themeChecker.isThemeLight(context)
@@ -75,8 +77,7 @@ class TaskTileWidget extends StatelessWidget {
           tileColor: colors.whiteColor,
           onTap: () {
             isCompleted
-                ? helperFunctions.showSnackBar(
-                    context, 'Completed tasks can not be modified!')
+                ? helperFunctions.showSnackBar(context, 'Completed tasks can not be modified!')
                 : Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -92,9 +93,7 @@ class TaskTileWidget extends StatelessWidget {
           title: Text(
             task,
             style: TextStyle(
-              decoration: isCompleted
-                  ? TextDecoration.lineThrough
-                  : TextDecoration.none,
+              decoration: isCompleted ? TextDecoration.lineThrough : TextDecoration.none,
             ),
             overflow: TextOverflow.ellipsis,
           ),

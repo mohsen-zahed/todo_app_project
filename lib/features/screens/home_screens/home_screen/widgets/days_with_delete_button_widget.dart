@@ -20,13 +20,16 @@ class DaysWithDeleteButtonWidget extends StatelessWidget {
         horizontal: mediaQueries.getWidthMediaQuery(context, 0.05),
         vertical: mediaQueries.getHeightMediaQuery(context, 0.015),
       ),
-      decoration: BoxDecoration(color: themeChecker.isThemeLight(context) ? colors.whiteColor : colors.darkPrimaryColor, boxShadow: [
-        BoxShadow(
-          blurRadius: 10,
-          offset: const Offset(0, 5),
-          color: themeChecker.isThemeLight(context) ? colors.blackColor.withOpacity(0.06) : colors.greyColorShade100.withOpacity(0.1),
-        ),
-      ]),
+      decoration: BoxDecoration(
+        color: themeChecker.isThemeLight(context) ? colors.whiteColor : colors.darkPrimaryColor,
+        boxShadow: [
+          BoxShadow(
+            blurRadius: 10,
+            offset: const Offset(0, 5),
+            color: themeChecker.isThemeLight(context) ? colors.blackColor.withOpacity(0.06) : colors.greyColorShade100.withOpacity(0.1),
+          ),
+        ],
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
