@@ -16,7 +16,11 @@ class MyColors {
   Color greyColorShade500 = Colors.grey.shade500;
   Color greyColorShade600 = Colors.grey.shade600;
   Color greyColorShade700 = Colors.grey.shade700;
+  Color greyColorShade800 = Colors.grey.shade800;
+  Color greyColorShade900 = Colors.grey.shade900;
   Color redColor = Colors.red;
+  Color redAccentColor = Colors.redAccent;
+  Color redAccentColor100 = Colors.redAccent[100]!;
   Color greenColor = Colors.green;
   Color lightPrimaryColor = const Color(0xff794cff);
   Color darkPrimaryColor = const Color.fromARGB(255, 27, 27, 27);

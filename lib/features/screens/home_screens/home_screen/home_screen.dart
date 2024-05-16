@@ -1,15 +1,14 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:to_do_list_project/config/images_paths.dart';
 import 'package:to_do_list_project/config/my_colors.dart';
 import 'package:to_do_list_project/features/data/models/task_model.dart';
-import 'package:to_do_list_project/features/screens/home_screens/create_task_screen/create_task_screen.dart';
+import 'package:to_do_list_project/features/screens/home_screens/create_task_screen/create_edit_task_screen.dart';
+import 'package:to_do_list_project/features/screens/home_screens/home_screen/widgets/days_with_delete_button_widget.dart';
+import 'package:to_do_list_project/features/screens/home_screens/home_screen/widgets/task_tile_widget.dart';
+import 'package:to_do_list_project/features/screens/home_screens/home_screen/widgets/top_text_with_search_bar_widget.dart';
 import 'package:to_do_list_project/functions/media_queries.dart';
 import 'package:to_do_list_project/main.dart';
-import 'package:to_do_list_project/utils/helper_functions.dart';
-import 'package:to_do_list_project/utils/theme_checker.dart';
-import 'package:lottie/lottie.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -19,17 +18,18 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final TextEditingController searchBarController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     final hive = Hive.box<TaskModel>(hiveBoxName);
     return Scaffold(
-      backgroundColor: colors.lightScaffoldBackgroundColor,
+      //* Button to createTaskScreen...
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: ((context) => CreateTaskScreen(
+              builder: ((context) => CreateEditTaskScreen(
                     taskModel: TaskModel(),
                   )),
             ),
@@ -52,47 +52,46 @@ class _HomeScreenState extends State<HomeScreen> {
             height: mediaQueries.getHeightMediaQuery(context),
             child: Column(
               children: [
-                const TopTextWithSearchBarWidget(),
+                //* Title with search bar...
+                TopTextWithSearchBarWidget(
+                  title: 'Todo List',
+                  searchBarController: searchBarController,
+                  icon: Icons.search,
+                ),
+                //* Today text with deleteAll button...
                 DaysWithDeleteButtonWidget(
+                  text: 'Today',
                   onDeletePressed: () {
                     hive.clear();
                   },
                 ),
+                //* List of tasks or Lottie animation if there are no tasks...
                 Expanded(
                   child: ValueListenableBuilder(
                     valueListenable: hive.listenable(),
-                    builder: (context, value, child) => hive.isEmpty
-                        ? LottieBuilder.asset(
-                            imagesPaths.emptyList,
-                            animate: true,
-                            reverse: true,
-                            options: LottieOptions(
-                              enableMergePaths: true,
-                            ),
+                    builder: (context, value, child) => hive.values.isEmpty
+                        ? Image.asset(
+                            imagesPaths.emptyListPng,
                             fit: BoxFit.contain,
-                            height:
-                                mediaQueries.getHeightMediaQuery(context, 0.6),
-                            width:
-                                mediaQueries.getWidthMediaQuery(context, 0.6),
                           )
                         : ListView.builder(
                             itemCount: hive.values.length,
                             itemBuilder: (context, index) {
+                              final List<TaskModel> tasksList = hive.values.toList().reversed.toList();
                               return TaskTileWidget(
-                                task: hive.values.toList()[index].taskName,
-                                isCompleted:
-                                    hive.values.toList()[index].isCompleted,
-                                priorityColor: checkPriority(
-                                    hive.values.toList()[index].priority),
+                                task: tasksList[index].taskName,
+                                isCompleted: tasksList[index].isCompleted,
+                                priorityColor: checkPriority(tasksList[index].priority),
+                                onDissmisbleDrag: (direction) {
+                                  DismissDirection.startToEnd;
+                                  tasksList[index].delete();
+                                },
                                 onTileIconTap: () {
                                   setState(() {
-                                    hive.values.toList()[index].isCompleted =
-                                        !hive.values
-                                            .toList()[index]
-                                            .isCompleted;
+                                    tasksList[index].isCompleted = !tasksList[index].isCompleted;
                                   });
                                 },
-                                taskModel: hive.values.toList()[index],
+                                taskModel: tasksList[index],
                               );
                             },
                           ),
@@ -114,221 +113,5 @@ class _HomeScreenState extends State<HomeScreen> {
     } else {
       return colors.blueAccentColor;
     }
-  }
-}
-
-class TaskTileWidget extends StatelessWidget {
-  final GestureTapCallback onTileIconTap;
-  final TaskModel taskModel;
-  final String task;
-  final Color priorityColor;
-  final bool isCompleted;
-  const TaskTileWidget({
-    super.key,
-    required this.task,
-    required this.priorityColor,
-    required this.isCompleted,
-    required this.onTileIconTap,
-    required this.taskModel,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(
-        horizontal: mediaQueries.getWidthMediaQuery(context, 0.05),
-        vertical: mediaQueries.getWidthMediaQuery(context, 0.01),
-      ),
-      child: ListTile(
-        leading: GestureDetector(
-          onTap: onTileIconTap,
-          child: Icon(
-            isCompleted
-                ? CupertinoIcons.check_mark_circled
-                : CupertinoIcons.circle,
-            color: isCompleted
-                ? priorityColor
-                : themeChecker.isThemeLight(context)
-                    ? colors.blackColor
-                    : colors.whiteColor,
-          ),
-        ),
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(10),
-            bottomLeft: Radius.circular(10),
-            topRight: Radius.circular(5),
-            bottomRight: Radius.circular(5),
-          ),
-        ),
-        tileColor: colors.whiteColor,
-        onTap: () {
-          isCompleted
-              ? helperFuncions.showSnackBar(
-                  context, 'Completed tasks can not be modified!')
-              : Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => CreateTaskScreen(
-                      taskModel: taskModel,
-                    ),
-                  ),
-                );
-        },
-        contentPadding: EdgeInsets.only(
-          left: mediaQueries.getWidthMediaQuery(context, 0.03),
-        ),
-        title: Text(
-          task,
-          style: TextStyle(
-            decoration:
-                isCompleted ? TextDecoration.lineThrough : TextDecoration.none,
-          ),
-          overflow: TextOverflow.ellipsis,
-        ),
-        trailing: Container(
-          width: 5,
-          height: mediaQueries.getHeightMediaQuery(context),
-          decoration: BoxDecoration(
-            color: priorityColor,
-            borderRadius: const BorderRadius.only(
-              topRight: Radius.circular(10),
-              bottomRight: Radius.circular(10),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class DaysWithDeleteButtonWidget extends StatelessWidget {
-  final GestureTapCallback onDeletePressed;
-  const DaysWithDeleteButtonWidget({
-    super.key,
-    required this.onDeletePressed,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: mediaQueries.getWidthMediaQuery(context),
-      padding: EdgeInsets.symmetric(
-        horizontal: mediaQueries.getWidthMediaQuery(context, 0.05),
-        vertical: mediaQueries.getHeightMediaQuery(context, 0.02),
-      ),
-      color: colors.whiteColor,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          SizedBox(
-            width: mediaQueries.getWidthMediaQuery(context, 0.13),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text('Today', style: Theme.of(context).textTheme.titleLarge),
-                const SizedBox(height: 2),
-                Container(
-                  width: double.infinity,
-                  height: 3,
-                  decoration: BoxDecoration(
-                    color: colors.lightPrimaryColor,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          GestureDetector(
-            onTap: onDeletePressed,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(5),
-                color: colors.greyColorShade100,
-              ),
-              child: Row(
-                children: [
-                  Text(
-                    'Delete All',
-                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                          color: colors.greyColorShade300,
-                        ),
-                  ),
-                  const SizedBox(width: 5),
-                  Icon(
-                    Icons.delete_sweep_rounded,
-                    color: colors.greyColorShade300,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class TopTextWithSearchBarWidget extends StatelessWidget {
-  const TopTextWithSearchBarWidget({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: mediaQueries.getWidthMediaQuery(context, 0.03),
-        vertical: mediaQueries.getHeightMediaQuery(context, 0.02),
-      ),
-      decoration: BoxDecoration(
-        color: Theme.of(context).primaryColor,
-      ),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'To Do List',
-                style: Theme.of(context).textTheme.headlineSmall!.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: colors.whiteColor,
-                    ),
-              ),
-              Icon(
-                CupertinoIcons.qrcode_viewfinder,
-                color: colors.whiteColor,
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          Container(
-            width: mediaQueries.getWidthMediaQuery(context),
-            decoration: BoxDecoration(
-              color: colors.whiteColor,
-              borderRadius: BorderRadius.circular(50),
-            ),
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: 'Search tasks...',
-                hintStyle: Theme.of(context)
-                    .textTheme
-                    .bodyLarge!
-                    .copyWith(color: colors.greyColorShade400),
-                focusedBorder: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                disabledBorder: InputBorder.none,
-                prefixIcon: Icon(
-                  Icons.search,
-                  color: colors.greyColorShade400,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }

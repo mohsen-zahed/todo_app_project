@@ -4,7 +4,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:to_do_list_project/config/my_colors.dart';
 import 'package:to_do_list_project/features/data/models/task_model.dart';
 import 'package:to_do_list_project/features/screens/home_screens/home_screen/home_screen.dart';
-import 'package:to_do_list_project/themes/themes.dart';
+import 'package:to_do_list_project/config/themes/my_theme_data.dart';
 
 const hiveBoxName = 'tasks';
 
@@ -16,6 +16,10 @@ void main() async {
   SystemChrome.setSystemUIOverlayStyle(
     SystemUiOverlayStyle(
       statusBarColor: colors.lightPrimaryColor,
+      statusBarIconBrightness: Brightness.light,
+      systemNavigationBarColor: colors.lightPrimaryColor,
+      systemNavigationBarIconBrightness: Brightness.light,
+      systemNavigationBarDividerColor: colors.transparentColor,
     ),
   );
 
@@ -30,8 +34,8 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
       themeMode: ThemeMode.system,
-      theme: lightTheme(context),
-      darkTheme: darkTheme(context),
+      theme: myThemeData.lightTheme(context),
+      darkTheme: myThemeData.darkTheme(context),
       home: const HomeScreen(),
     );
   }
