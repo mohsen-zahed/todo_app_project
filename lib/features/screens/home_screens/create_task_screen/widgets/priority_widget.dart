@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:to_do_list_project/config/my_colors.dart';
-import 'package:to_do_list_project/functions/media_queries.dart';
+import 'package:to_do_list_project/utils/media_queries.dart';
 
 class PriorityWidget extends StatelessWidget {
   final String label;

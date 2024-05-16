@@ -7,7 +7,7 @@ import 'package:to_do_list_project/features/screens/home_screens/create_task_scr
 import 'package:to_do_list_project/features/screens/home_screens/home_screen/widgets/days_with_delete_button_widget.dart';
 import 'package:to_do_list_project/features/screens/home_screens/home_screen/widgets/task_tile_widget.dart';
 import 'package:to_do_list_project/features/screens/home_screens/home_screen/widgets/top_text_with_search_bar_widget.dart';
-import 'package:to_do_list_project/functions/media_queries.dart';
+import 'package:to_do_list_project/utils/media_queries.dart';
 import 'package:to_do_list_project/main.dart';
 
 class HomeScreen extends StatefulWidget {

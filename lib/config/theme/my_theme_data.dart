@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:to_do_list_project/config/my_colors.dart';
-import 'package:to_do_list_project/config/themes/custom_theme_data_props.dart';
+import 'package:to_do_list_project/config/theme/custom_theme_data_props.dart';
 
 class MyThemeData {
   ThemeData lightTheme(BuildContext context) {

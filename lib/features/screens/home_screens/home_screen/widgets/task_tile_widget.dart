@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:to_do_list_project/config/my_colors.dart';
 import 'package:to_do_list_project/features/data/models/task_model.dart';
 import 'package:to_do_list_project/features/screens/home_screens/create_task_screen/create_edit_task_screen.dart';
-import 'package:to_do_list_project/functions/media_queries.dart';
-import 'package:to_do_list_project/utils/helper_functions.dart';
+import 'package:to_do_list_project/utils/media_queries.dart';
+import 'package:to_do_list_project/helper_functions/helper_functions.dart';
 import 'package:to_do_list_project/utils/theme_checker.dart';
 
 class TaskTileWidget extends StatelessWidget {
@@ -75,7 +75,7 @@ class TaskTileWidget extends StatelessWidget {
           tileColor: colors.whiteColor,
           onTap: () {
             isCompleted
-                ? helperFuncions.showSnackBar(
+                ? helperFunctions.showSnackBar(
                     context, 'Completed tasks can not be modified!')
                 : Navigator.push(
                     context,

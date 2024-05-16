@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:to_do_list_project/config/my_colors.dart';
-import 'package:to_do_list_project/functions/media_queries.dart';
+import 'package:to_do_list_project/utils/media_queries.dart';
 
 class TopTextWithSearchBarWidget extends StatelessWidget {
   final String title;

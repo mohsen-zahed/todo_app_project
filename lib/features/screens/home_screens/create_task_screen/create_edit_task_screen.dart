@@ -3,9 +3,9 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:to_do_list_project/config/my_colors.dart';
 import 'package:to_do_list_project/features/data/models/task_model.dart';
 import 'package:to_do_list_project/features/screens/home_screens/create_task_screen/widgets/priority_widget.dart';
-import 'package:to_do_list_project/functions/media_queries.dart';
+import 'package:to_do_list_project/utils/media_queries.dart';
 import 'package:to_do_list_project/main.dart';
-import 'package:to_do_list_project/utils/helper_functions.dart';
+import 'package:to_do_list_project/helper_functions/helper_functions.dart';
 
 class CreateEditTaskScreen extends StatefulWidget {
   const CreateEditTaskScreen({super.key, required this.taskModel});
@@ -39,7 +39,7 @@ class _CreateEditTaskScreenState extends State<CreateEditTaskScreen> {
               box.add(widget.taskModel);
               Navigator.pop(context);
             } else {
-              helperFuncions.showSnackBar(context, 'Task can not be empty!');
+              helperFunctions.showSnackBar(context, 'Task can not be empty!');
               focusNode.requestFocus();
             }
           }
