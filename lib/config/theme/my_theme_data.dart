@@ -16,9 +16,9 @@ class MyThemeData {
       primaryColor: colors.lightPrimaryColor,
       scaffoldBackgroundColor: colors.lightScaffoldBackgroundColor,
       // primaryTextTheme: myPrimaryTextTheme.lightPrimaryTextTheme(context),
-      textTheme: customThemeDataProps.lightTextTheme(),
-      appBarTheme: customThemeDataProps.lightAppBarTheme(context),
-      floatingActionButtonTheme: customThemeDataProps.lightFloatingActionButtonThemeData(context),
+      textTheme: CustomThemeDataProps.instance.lightTextTheme(),
+      appBarTheme: CustomThemeDataProps.instance.lightAppBarTheme(context),
+      floatingActionButtonTheme: CustomThemeDataProps.instance.lightFloatingActionButtonThemeData(context),
     );
   }
 
@@ -28,11 +28,9 @@ class MyThemeData {
       primaryColor: colors.darkPrimaryColor,
       scaffoldBackgroundColor: colors.darkScaffoldBackgroundColor,
       // primaryTextTheme: myPrimaryTextTheme.darkPrimaryTextTheme(context),
-      textTheme: customThemeDataProps.darkTextTheme(),
-      appBarTheme: customThemeDataProps.darkAppBarTheme(context),
-      floatingActionButtonTheme: customThemeDataProps.darkFloatingActionButtonThemeData(context),
+      textTheme: CustomThemeDataProps.instance.darkTextTheme(),
+      appBarTheme: CustomThemeDataProps.instance.darkAppBarTheme(context),
+      floatingActionButtonTheme: CustomThemeDataProps.instance.darkFloatingActionButtonThemeData(context),
     );
   }
 }
-
-final MyThemeData myThemeData = MyThemeData.instance;

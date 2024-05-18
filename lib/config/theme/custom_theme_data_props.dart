@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:to_do_list_project/config/my_colors.dart';
 
-final CustomThemeDataProps customThemeDataProps = CustomThemeDataProps.instance;
 
 class CustomThemeDataProps {
   static CustomThemeDataProps? _customThemeDataProps;

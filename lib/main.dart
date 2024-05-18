@@ -35,8 +35,8 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
       themeMode: ThemeMode.system,
-      theme: myThemeData.lightTheme(context),
-      darkTheme: myThemeData.darkTheme(context),
+      theme: MyThemeData.instance.lightTheme(context),
+      darkTheme: MyThemeData.instance.darkTheme(context),
       home: const HomeScreen(),
     );
   }

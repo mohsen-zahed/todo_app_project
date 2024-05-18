@@ -77,7 +77,7 @@ class TaskTileWidget extends StatelessWidget {
           tileColor: colors.whiteColor,
           onTap: () {
             isCompleted
-                ? helperFunctions.showSnackBar(context, 'Completed tasks can not be modified!')
+                ? HelperFunctions.instance.showSnackBar(context, 'Completed tasks can not be modified!')
                 : Navigator.push(
                     context,
                     MaterialPageRoute(
